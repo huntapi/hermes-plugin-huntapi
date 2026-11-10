@@ -1,0 +1,23 @@
+name: huntapi
+version: 1.0.0
+description: "Tools to read the metadata of public videos and download their video or audio, through the HuntAPI media API."
+author: HuntAPI
+license: MIT
+requires_hermes: ">=0.21.6"
+provides_tools:
+  - huntapi_media_metadata
+  - huntapi_video_download
+  - huntapi_audio_download
+  - huntapi_job_status
+provides_hooks: []
+provides_middleware: []
+requires_env:
+  - name: HUNTAPI_API_KEY
+    description: HuntAPI API key
+    url: https://app.huntapi.com
+    secret: true
+config_schema:
+  api_key:
+    type: secret
+    env: HUNTAPI_API_KEY
+    label: HuntAPI API key
