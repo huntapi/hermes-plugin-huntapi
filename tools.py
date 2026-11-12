@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import urllib.parse
 
 from . import _client
 from .schemas import TOOLS
@@ -14,8 +15,12 @@ def _arguments(name, args):
     for arg, value in (args or {}).items():
         if value is None or value == "":
             continue
+        if arg == "without_sound":
+            if value is True:
+                params["download_type"] = "video"
+            continue
         if "{" + arg + "}" in path:
-            path_values[arg] = str(value).strip()
+            path_values[arg] = urllib.parse.quote(str(value).strip(), safe="")
         elif arg in mapping:
             params[mapping[arg]] = json.dumps(value, separators=(",", ":")) if isinstance(value, (dict, list)) else value
     for arg in TOOLS[name][1].get("required", []):

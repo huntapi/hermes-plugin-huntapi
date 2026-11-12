@@ -11,7 +11,7 @@ from agent.secret_scope import get_secret
 
 BASE_URL = "https://api.huntapi.com"
 KEY_ENV = "HUNTAPI_API_KEY"
-USER_AGENT = "hermes-plugin-huntapi/1.0.0"
+USER_AGENT = "hermes-plugin-huntapi/1.1.0"
 TIMEOUT_SECONDS = 60
 
 

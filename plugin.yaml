@@ -1,6 +1,6 @@
 name: huntapi
-version: 1.0.0
-description: "Tools to read the metadata of public videos and download their video or audio, through the HuntAPI media API."
+version: 1.1.0
+description: "Video and audio for Hermes: read the metadata of public videos from YouTube, TikTok, Instagram, Vimeo, X, Reddit and more, and download them as video or audio files, through the HuntAPI media API."
 author: HuntAPI
 license: MIT
 requires_hermes: ">=0.21.6"
@@ -9,6 +9,7 @@ provides_tools:
   - huntapi_video_download
   - huntapi_audio_download
   - huntapi_job_status
+  - huntapi_usage
 provides_hooks: []
 provides_middleware: []
 requires_env:

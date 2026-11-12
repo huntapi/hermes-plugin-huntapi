@@ -96,7 +96,7 @@ def run(name, args):
 
 def test_register_declares_every_tool():
     registered = tools()
-    assert sorted(registered) == sorted(['huntapi_media_metadata', 'huntapi_video_download', 'huntapi_audio_download', 'huntapi_job_status'])
+    assert sorted(registered) == sorted(['huntapi_media_metadata', 'huntapi_video_download', 'huntapi_audio_download', 'huntapi_job_status', 'huntapi_usage'])
     for name, tool in registered.items():
         assert tool["toolset"] == "huntapi"
         assert tool["schema"]["name"] == name
@@ -121,7 +121,7 @@ def test_missing_required_argument(api_key, calls):
     assert calls == []
 
 
-@pytest.mark.parametrize("name,args,url", [('huntapi_media_metadata', {'url': 'https://www.youtube.com/watch?v=jNQXAC9IVRw'}, 'https://api.huntapi.com/v1/media/metadata?query=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DjNQXAC9IVRw'), ('huntapi_video_download', {'url': 'https://www.youtube.com/watch?v=jNQXAC9IVRw', 'video_quality': '720', 'video_format': 'mp4'}, 'https://api.huntapi.com/v1/video/download?query=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DjNQXAC9IVRw&video_quality=720&video_format=mp4'), ('huntapi_audio_download', {'url': 'https://www.youtube.com/watch?v=jNQXAC9IVRw', 'audio_format': 'mp3'}, 'https://api.huntapi.com/v1/audio/download?query=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DjNQXAC9IVRw&audio_format=mp3'), ('huntapi_job_status', {'job_id': 'abc-123'}, 'https://api.huntapi.com/v1/jobs/abc-123')])
+@pytest.mark.parametrize("name,args,url", [('huntapi_media_metadata', {'url': 'https://www.youtube.com/watch?v=jNQXAC9IVRw'}, 'https://api.huntapi.com/v1/media/metadata?query=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DjNQXAC9IVRw'), ('huntapi_video_download', {'url': 'https://www.youtube.com/watch?v=jNQXAC9IVRw', 'video_quality': '720p', 'video_format': 'mp4'}, 'https://api.huntapi.com/v1/video/download?query=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DjNQXAC9IVRw&video_quality=720p&video_format=mp4'), ('huntapi_audio_download', {'url': 'https://www.youtube.com/watch?v=jNQXAC9IVRw', 'audio_format': 'mp3'}, 'https://api.huntapi.com/v1/audio/download?query=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DjNQXAC9IVRw&audio_format=mp3'), ('huntapi_job_status', {'job_id': 'abc-123'}, 'https://api.huntapi.com/v1/jobs/abc-123'), ('huntapi_video_download', {'url': 'https://vimeo.com/1', 'without_sound': True, 'max_duration': 60}, 'https://api.huntapi.com/v1/video/download?query=https%3A%2F%2Fvimeo.com%2F1&download_type=video&max_duration=60'), ('huntapi_video_download', {'url': 'https://vimeo.com/1', 'without_sound': False}, 'https://api.huntapi.com/v1/video/download?query=https%3A%2F%2Fvimeo.com%2F1'), ('huntapi_audio_download', {'url': 'https://vimeo.com/1', 'audio_quality': '320kbps'}, 'https://api.huntapi.com/v1/audio/download?query=https%3A%2F%2Fvimeo.com%2F1&audio_quality=320kbps'), ('huntapi_job_status', {'job_id': '../usage'}, 'https://api.huntapi.com/v1/jobs/..%2Fusage'), ('huntapi_usage', {}, 'https://api.huntapi.com/v1/usage')])
 def test_each_tool_calls_its_endpoint(api_key, calls, name, args, url):
     calls.respond({"ok": True})
     assert run(name, args) == {"ok": True}
@@ -139,3 +139,11 @@ def test_api_error_message_is_returned(api_key, calls):
 def test_network_error(api_key, calls):
     calls.unreachable()
     assert run('huntapi_media_metadata', {'url': 'https://www.youtube.com/watch?v=jNQXAC9IVRw'}) == {"error": "HuntAPI: could not reach the API"}
+
+
+def test_manifest_lists_every_tool():
+    from pathlib import Path
+
+    manifest = (Path(__file__).resolve().parents[1] / "plugin.yaml").read_text()
+    listed = {line.strip()[2:] for line in manifest.splitlines() if line.strip().startswith("- huntapi_")}
+    assert listed == set(tools())
